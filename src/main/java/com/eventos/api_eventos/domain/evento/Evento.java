@@ -33,8 +33,8 @@ public class Evento {
     private String imgUrl;
     //url da pagina do evento
     private String eventoUrl;
-    //indica se é remoto ou nao
-    private Boolean remoto;
+    //indica se é presencial ou nao
+    private Boolean presencial;
     //data do evento
     private Date data;
 
