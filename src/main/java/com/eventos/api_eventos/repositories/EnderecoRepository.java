@@ -1,4 +1,4 @@
-package com.eventos.api_eventos.domain.repositories;
+package com.eventos.api_eventos.repositories;
 
 import java.util.UUID;
 
