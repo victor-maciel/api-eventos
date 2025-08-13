@@ -4,16 +4,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.eventos.api_eventos.domain.evento.Evento;
 import com.eventos.api_eventos.domain.evento.EventoRequestDTO;
+import com.eventos.api_eventos.domain.evento.EventoResponseDTO;
 import com.eventos.api_eventos.repositories.EventoRepository;
 
 @Service
@@ -52,19 +57,19 @@ public class EventoService {
     private String uploadImg(MultipartFile multipartFile) {
         String fileName = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
         try {
-            File file  = this.convertMultipartToFile(multipartFile);
+            File file = this.convertMultipartToFile(multipartFile);
             s3client.putObject(bucketName, fileName, file);
             file.delete();
             return s3client.getUrl(bucketName, fileName).toString();
-            
+
         } catch (Exception e) {
             System.out.println("erro ao subir o arquivo");
-            return  "";
+            return "";
         }
 
     }
 
-    private File convertMultipartToFile(MultipartFile multipartFile) throws IOException{
+    private File convertMultipartToFile(MultipartFile multipartFile) throws IOException {
 
         File convFile = new File(multipartFile.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(convFile)) {
@@ -73,5 +78,44 @@ public class EventoService {
         return convFile;
     }
 
+    //todos os eventos
+    public List<EventoResponseDTO> getEventos(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Evento> paginacao = this.eventoRepository.findAll(pageable);
+
+        return paginacao.map(evento -> new EventoResponseDTO(evento.getId(),
+                evento.getTitulo(),
+                evento.getDescricao(),
+                evento.getDate(),
+                "",
+                "",
+                "",
+                "",
+                "",
+                evento.getPresencial(),
+                evento.getEventoUrl(),
+                evento.getImgUrl())).stream().toList();
+
+    }
+
+    //eventos pendentes
+        public List<EventoResponseDTO> getEventosPendentes(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Evento> paginacao = this.eventoRepository.findEventosPendentes(new Date(), pageable);
+
+        return paginacao.map(evento -> new EventoResponseDTO(evento.getId(),
+                evento.getTitulo(),
+                evento.getDescricao(),
+                evento.getDate(),
+                "",
+                "",
+                "",
+                "",
+                "",
+                evento.getPresencial(),
+                evento.getEventoUrl(),
+                evento.getImgUrl())).stream().toList();
+
+    }
 
 }
