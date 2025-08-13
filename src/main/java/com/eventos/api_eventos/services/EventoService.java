@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3;
 import com.eventos.api_eventos.domain.evento.Evento;
 import com.eventos.api_eventos.domain.evento.EventoRequestDTO;
+import com.eventos.api_eventos.repositories.EventoRepository;
 
 @Service
 public class EventoService {
@@ -24,19 +25,25 @@ public class EventoService {
     @Autowired
     private AmazonS3 s3client;
 
+    @Autowired
+    private EventoRepository eventoRepository;
+
     public Evento criarEvento(EventoRequestDTO data) {
         String imgUrl = null;
 
         if (data.imagem() != null) {
-            this.uploadImg(data.imagem());
+            imgUrl = this.uploadImg(data.imagem());
         }
 
         Evento novoEvento = new Evento();
         novoEvento.setTitulo(data.titulo());
         novoEvento.setDescricao(data.descricao());
         novoEvento.setEventoUrl(data.eventoUrl());
-        novoEvento.setData(new Date(data.data()));
+        novoEvento.setDate(new Date(data.data()));
         novoEvento.setImgUrl(imgUrl);
+        novoEvento.setPresencial(data.presencial());
+
+        eventoRepository.save(novoEvento);
 
         return novoEvento;
 
@@ -51,9 +58,9 @@ public class EventoService {
             return s3client.getUrl(bucketName, fileName).toString();
             
         } catch (Exception e) {
-            // TODO: handle exception
+            System.out.println("erro ao subir o arquivo");
+            return  "";
         }
-        return "";
 
     }
 

@@ -36,7 +36,7 @@ public class Evento {
     //indica se é presencial ou nao
     private Boolean presencial;
     //data do evento
-    private Date data;
+    private Date date;
 
 
 }
