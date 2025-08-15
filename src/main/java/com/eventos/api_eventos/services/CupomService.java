@@ -1,6 +1,7 @@
 package com.eventos.api_eventos.services;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,10 @@ public class CupomService {
 
         return  cupomRepository.save(cupom);
         
+    }
+
+    public List<Cupom> consultaCupons(UUID eventoId, Date dataAtual) {
+        return cupomRepository.findByEventoIdAndValidadeAfter(eventoId, dataAtual);
     }
 
 }

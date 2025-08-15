@@ -3,9 +3,13 @@ package com.eventos.api_eventos.domain.evento;
 import java.util.Date;
 import java.util.UUID;
 
+import com.eventos.api_eventos.domain.endereco.Endereco;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,6 +41,8 @@ public class Evento {
     private Boolean presencial;
     //data do evento
     private Date date;
-
+    //Relação com a tabela evento
+    @OneToOne(mappedBy = "evento", cascade = CascadeType.ALL)
+    private Endereco endereco;
 
 }
